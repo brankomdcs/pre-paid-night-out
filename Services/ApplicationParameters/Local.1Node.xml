@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="fabric:/Services" xmlns="http://schemas.microsoft.com/2011/01/fabric">
+  <Parameters>
+    <Parameter Name="Transaction_ASPNETCORE_ENVIRONMENT" Value="Development" />
+    <Parameter Name="Payment_ASPNETCORE_ENVIRONMENT" Value="Development" />
+    <Parameter Name="Account_ASPNETCORE_ENVIRONMENT" Value="Development" />
+    <Parameter Name="Orchestrator_ASPNETCORE_ENVIRONMENT" Value="Development" />
+  </Parameters>
+</Application>
