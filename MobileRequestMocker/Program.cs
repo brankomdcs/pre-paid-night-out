@@ -21,7 +21,7 @@ namespace MobileRequestMocker
             HttpClient httpClient = new HttpClient();
             UserRepository userRepository = new UserRepository();
 
-            ServicePointManager.FindServicePoint(new Uri("http://localhost:8080")).ConnectionLimit = maxConcurrentRequests;
+            ServicePointManager.FindServicePoint(new Uri("http://localhost:19801")).ConnectionLimit = maxConcurrentRequests;
 
             if (registerUsersStepSelected) {
                 RegisterUserRequestGenerator registerUserRequestGenerator = new RegisterUserRequestGenerator();
