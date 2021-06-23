@@ -3,6 +3,7 @@ using Microsoft.ServiceFabric.Data;
 using Microsoft.ServiceFabric.Data.Collections;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Transaction.Models;
@@ -28,7 +29,7 @@ namespace Transaction.Controllers
 
             using (ITransaction tx = stateManager.CreateTransaction())
             {
-                await usersCollection.AddAsync(tx, Guid.NewGuid(), new PaymentTransaction { UserId = userId, AccountTo = accountTo, Amount = amount });
+                await usersCollection.AddAsync(tx, Guid.NewGuid(), new PaymentTransaction { UserId = userId, AccountTo = accountTo, Amount = amount, Time = DateTime.Now });
                 await tx.CommitAsync();
             }
 
@@ -54,7 +55,7 @@ namespace Transaction.Controllers
                         result.Add(enumerator.Current);
                 }
 
-                return new JsonResult(result);
+                return new JsonResult(result.OrderBy(transaction => transaction.Value.Time));
             }
         }
 
