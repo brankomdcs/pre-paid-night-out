@@ -9,7 +9,7 @@ namespace MobileRequestMocker.Requests.Generators
         {
             Random random = new Random();
             int randomAmount = random.Next(50, 100);
-            return $"http://localhost:8080/api/transaction/charge?userId={user.Id}&accountTo={user.Account}&amount={randomAmount}";
+            return $"http://localhost:19081/Services/Orchestrator/api/transaction/charge?userId={user.Id}&accountTo={user.Account}&amount={randomAmount}";
         }
     }
 }

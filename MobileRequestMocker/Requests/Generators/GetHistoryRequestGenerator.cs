@@ -6,7 +6,7 @@ namespace MobileRequestMocker.Requests.Generators
     {
         public string GenerateFor(User user)
         {
-            return $"http://localhost:8080/api/transaction/history?userId={user.Id}";
+            return $"http://localhost:19081/Services/Orchestrator/api/transaction/history?userId={user.Id}";
         }
     }
 }
