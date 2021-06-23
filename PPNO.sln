@@ -5,13 +5,15 @@ VisualStudioVersion = 16.0.31402.337
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{A07B5EB6-E848-4116-A8D0-A826331D98C6}") = "Services", "Services\Services.sfproj", "{14EE341F-EF13-4F10-842E-DF34FABFE55E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orchestrator", "Orchestrator\Orchestrator.csproj", "{481D7EA3-E4F6-46B2-A92A-B33BC66DE4A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchestrator", "Orchestrator\Orchestrator.csproj", "{481D7EA3-E4F6-46B2-A92A-B33BC66DE4A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Account", "Account\Account.csproj", "{A7604CBF-022A-4225-8C76-5F5548FE61BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Account", "Account\Account.csproj", "{A7604CBF-022A-4225-8C76-5F5548FE61BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Payment", "Payment\Payment.csproj", "{F92FE074-93CF-49D9-AF09-93C7FCF1DC53}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Payment", "Payment\Payment.csproj", "{F92FE074-93CF-49D9-AF09-93C7FCF1DC53}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transaction", "Transaction\Transaction.csproj", "{9FE9C8E1-E960-44CD-8139-BC945B22EB4C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Transaction", "Transaction\Transaction.csproj", "{9FE9C8E1-E960-44CD-8139-BC945B22EB4C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileRequestMocker", "MobileRequestMocker\MobileRequestMocker.csproj", "{2A93DD7F-0E8F-4FAA-B9AE-5BA0654BC4DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,6 +63,14 @@ Global
 		{9FE9C8E1-E960-44CD-8139-BC945B22EB4C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9FE9C8E1-E960-44CD-8139-BC945B22EB4C}.Release|x64.ActiveCfg = Release|Any CPU
 		{9FE9C8E1-E960-44CD-8139-BC945B22EB4C}.Release|x64.Build.0 = Release|Any CPU
+		{2A93DD7F-0E8F-4FAA-B9AE-5BA0654BC4DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A93DD7F-0E8F-4FAA-B9AE-5BA0654BC4DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A93DD7F-0E8F-4FAA-B9AE-5BA0654BC4DA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2A93DD7F-0E8F-4FAA-B9AE-5BA0654BC4DA}.Debug|x64.Build.0 = Debug|Any CPU
+		{2A93DD7F-0E8F-4FAA-B9AE-5BA0654BC4DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A93DD7F-0E8F-4FAA-B9AE-5BA0654BC4DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A93DD7F-0E8F-4FAA-B9AE-5BA0654BC4DA}.Release|x64.ActiveCfg = Release|Any CPU
+		{2A93DD7F-0E8F-4FAA-B9AE-5BA0654BC4DA}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
