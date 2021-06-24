@@ -11,11 +11,12 @@ namespace MobileRequestMocker
 {
     class Program
     {
-        const int numberOfRandomRequestsToSendInOneBatch = 100;
-        const int maxConcurrentRequests = 100;
+        static int numberOfRandomRequestsToSendInOneBatch = 100;
+        static int maxConcurrentRequests = numberOfRandomRequestsToSendInOneBatch;
         static async Task Main(string[] args)
         {
-            Console.WriteLine("Enter 'y' if you would like to register users, enter anything else to skip.");
+            Console.WriteLine("- Enter 'y' if you would like to run automatical user registration (mandatory for running the app for the first time)\n" +
+                              "- Enter anything else to skip the registration.");
             bool registerUsersStepSelected = Console.ReadLine() == "y";
 
             HttpClient httpClient = new HttpClient();
@@ -34,11 +35,16 @@ namespace MobileRequestMocker
                 }
             }
 
-            Console.WriteLine($"Enter 'b' to send random requests in batches or 'l' to send them in infinite loop. Enter anything else to terminate.");
+            Console.WriteLine($"- Enter 'b' to send random requests in batches\n" +
+                              $"- Enter 'l' to send them in infinite loop\n" +
+                              $"- Enter anything else to terminate.");
             string option = Console.ReadLine();
 
             if (option == "b")
             {
+                Console.WriteLine("Enter number of concurent request you would like to send in one batch:");
+                numberOfRandomRequestsToSendInOneBatch = int.Parse(Console.ReadLine());
+
                 Console.WriteLine($"Enter 'y' to send the batch of {numberOfRandomRequestsToSendInOneBatch} randomly generated requests or anything else to terminate.");
                 while (Console.ReadLine() == "y")
                 {

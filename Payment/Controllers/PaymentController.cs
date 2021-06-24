@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading;
 
 namespace Payment.Controllers
@@ -10,8 +11,9 @@ namespace Payment.Controllers
         [HttpPost("{charge}")]
         public void Charge(string accountFrom, string accountTo, decimal amount)
         {
-            // 3RD PARTY PAYMENT COMPONENT INTEGRATION SIMULATION (3s):
-            Thread.Sleep(1000);
+            Random random = new Random();
+            int externalPaymentSystemProcessingTime = random.Next(200, 2000);
+            Thread.Sleep(externalPaymentSystemProcessingTime);
         }
     }
 }
