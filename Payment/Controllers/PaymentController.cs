@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Threading;
+using System.Threading.Tasks;
 
 namespace Payment.Controllers
 {
@@ -9,11 +9,12 @@ namespace Payment.Controllers
     public class PaymentController : ControllerBase
     {
         [HttpPost("{charge}")]
-        public void Charge(string accountFrom, string accountTo, decimal amount)
+        public async Task<IActionResult> Charge(string accountFrom, string accountTo, decimal amount)
         {
             Random random = new Random();
-            int externalPaymentSystemProcessingTime = random.Next(200, 2000);
-            Thread.Sleep(externalPaymentSystemProcessingTime);
+            int externalPaymentSystemProcessingTime = random.Next(500, 2000);
+            await Task.Delay(externalPaymentSystemProcessingTime);
+            return new OkResult();
         }
     }
 }
