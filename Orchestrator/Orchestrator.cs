@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Fabric;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
@@ -10,8 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
-using Microsoft.ServiceFabric.Data;
 using System.Net.Http;
+using System.Fabric.Description;
 
 namespace Orchestrator
 {
@@ -20,6 +19,8 @@ namespace Orchestrator
     /// </summary>
     internal sealed class Orchestrator : StatelessService
     {
+        private static int numberOfRequestsWithinSecond = 0;
+        private const string requestsPerSecondMetricName = "OrchestratorRequestsPerSec";
         public Orchestrator(StatelessServiceContext context)
             : base(context)
         { }
@@ -56,8 +57,41 @@ namespace Orchestrator
             };
         }
 
+        protected override async Task RunAsync(CancellationToken cancellationToken)
+        {
+            DefineOrchestratorMetrics();
+
+            while (true)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                Partition.ReportLoad(new List<LoadMetric> { new LoadMetric(requestsPerSecondMetricName, numberOfRequestsWithinSecond) });
+                numberOfRequestsWithinSecond = 0;
+                
+                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
+            }
+        }
+
+        private void DefineOrchestratorMetrics()
+        {
+            StatelessServiceUpdateDescription updateServiceDescription = new StatelessServiceUpdateDescription();
+            StatelessServiceLoadMetricDescription requestsPerSecondMetric = new StatelessServiceLoadMetricDescription() { Name = requestsPerSecondMetricName, Weight = ServiceLoadMetricWeight.High };
+
+            if (updateServiceDescription.Metrics == null)
+                updateServiceDescription.Metrics = new OrchestratorMetrics();
+
+            updateServiceDescription.Metrics.Add(requestsPerSecondMetric);
+
+            FabricClient fabricClient = new FabricClient();
+            fabricClient.ServiceManager.UpdateServiceAsync(GetOrchestratorServiceNameFrom(Context), updateServiceDescription);
+        }
+
+        public static void RegisterRequestForMetrics() { numberOfRequestsWithinSecond++; }
+
         private const string reverseProxyAddress = "http://localhost:19081";
         private static string GetApplicationBaseUriFrom(ServiceContext context) => context.CodePackageActivationContext.ApplicationName;
+
+        internal static Uri GetOrchestratorServiceNameFrom(ServiceContext context) => new Uri($"{GetApplicationBaseUriFrom(context)}/Orchestrator");
 
         internal static Uri GetAccountServiceNameFrom(ServiceContext context) => new Uri($"{GetApplicationBaseUriFrom(context)}/Account");
         internal static Uri GetAccountServiceAddressFrom(Uri serviceName) => new Uri($"{reverseProxyAddress}{serviceName.AbsolutePath}");

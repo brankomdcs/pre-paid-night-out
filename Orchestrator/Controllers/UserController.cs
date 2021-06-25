@@ -24,6 +24,7 @@ namespace Orchestrator.Controllers
         [HttpPost("{register}")]
         public async Task<IActionResult> Register(int id, string account, string name, Enums.UserType type)
         {
+            Orchestrator.RegisterRequestForMetrics();
             string postUrl = $"{Orchestrator.GetAccountServiceAddressFrom(accountServiceName)}/api/User/register" +
                              $"?id={id}&account={account}&name={name}&type={type}&PartitionKey={UserPartitionKeyGenerator.GenerateFor(id)}&PartitionKind=Int64Range";
             
@@ -33,6 +34,7 @@ namespace Orchestrator.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(int id)
         {
+            Orchestrator.RegisterRequestForMetrics();
             string getUrl = $"{Orchestrator.GetAccountServiceAddressFrom(accountServiceName)}/api/User" +
                             $"?id={id}&PartitionKey={UserPartitionKeyGenerator.GenerateFor(id)}&PartitionKind=Int64Range";
             

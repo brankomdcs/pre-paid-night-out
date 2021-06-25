@@ -27,6 +27,7 @@ namespace Orchestrator.Controllers
         [HttpPost("{add}")]
         public async Task<IActionResult> Add(int userId, string userAccount, decimal amount)
         {
+            Orchestrator.RegisterRequestForMetrics();
             // Charge user for the amount of credit:
             string paymentUrl = $"{Orchestrator.GetPaymentServiceAddressFrom(paymentServiceName)}/api/Payment/charge?" +
                                 $"accountFrom={userAccount}&accountTo={Accounts.PPNO_ORGANIZATION_ACCOUNT}&amount={amount}";

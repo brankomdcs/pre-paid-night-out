@@ -29,6 +29,7 @@ namespace Orchestrator.Controllers
         [HttpPost("{charge}")]
         public async Task<IActionResult> Charge(int userId, string accountTo, decimal amount)
         {
+            Orchestrator.RegisterRequestForMetrics();
             // Check if user has enough credit:
             string getBalanceUrl = $"{Orchestrator.GetTransactionServiceAddressFrom(transactionServiceName)}/api/Transaction/balance?userId={userId}" +
                                    $"&PartitionKey={TransactionPartitionKeyGenerator.GenerateFor(userId)}&PartitionKind=Int64Range";
@@ -57,7 +58,8 @@ namespace Orchestrator.Controllers
 
         [HttpGet("history")]
         public async Task<IActionResult> Get(int userId)
-        { 
+        {
+            Orchestrator.RegisterRequestForMetrics();
             string getUrl = $"{Orchestrator.GetTransactionServiceAddressFrom(transactionServiceName)}/api/Transaction/history" +
                             $"?userId={userId}&PartitionKey={TransactionPartitionKeyGenerator.GenerateFor(userId)}&PartitionKind=Int64Range";
             
@@ -67,6 +69,7 @@ namespace Orchestrator.Controllers
         [HttpGet("{balance}")]
         public async Task<IActionResult> GetBalance(int userId)
         {
+            Orchestrator.RegisterRequestForMetrics();
             string getUrl = $"{Orchestrator.GetTransactionServiceAddressFrom(transactionServiceName)}/api/Transaction/balance" +
                             $"?userId={userId}&PartitionKey={TransactionPartitionKeyGenerator.GenerateFor(userId)}&PartitionKind=Int64Range";
 

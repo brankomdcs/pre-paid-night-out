@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Payment", "Payment\Payment.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Transaction", "Transaction\Transaction.csproj", "{9FE9C8E1-E960-44CD-8139-BC945B22EB4C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileRequestMocker", "MobileRequestMocker\MobileRequestMocker.csproj", "{2A93DD7F-0E8F-4FAA-B9AE-5BA0654BC4DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileRequestMocker", "MobileRequestMocker\MobileRequestMocker.csproj", "{2A93DD7F-0E8F-4FAA-B9AE-5BA0654BC4DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
