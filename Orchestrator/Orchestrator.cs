@@ -59,7 +59,9 @@ namespace Orchestrator
 
         protected override async Task RunAsync(CancellationToken cancellationToken)
         {
-            DefineOrchestratorMetrics();
+            FabricClient fabricClient = new FabricClient();
+            DefineOrchestratorMetrics(fabricClient);
+            DefineOrchestratorScalingPolicies(fabricClient);
 
             while (true)
             {
@@ -72,17 +74,49 @@ namespace Orchestrator
             }
         }
 
-        private void DefineOrchestratorMetrics()
+        private void DefineOrchestratorMetrics(FabricClient fabricClient)
         {
             StatelessServiceUpdateDescription updateServiceDescription = new StatelessServiceUpdateDescription();
-            StatelessServiceLoadMetricDescription requestsPerSecondMetric = new StatelessServiceLoadMetricDescription() { Name = requestsPerMinuteMetricName, Weight = ServiceLoadMetricWeight.High };
+            StatelessServiceLoadMetricDescription requestsPerSecondMetric = new StatelessServiceLoadMetricDescription 
+            { 
+                Name = requestsPerMinuteMetricName, 
+                Weight = ServiceLoadMetricWeight.High
+            };
 
-            if (updateServiceDescription.Metrics == null)
+            if (updateServiceDescription.Metrics == null) {
                 updateServiceDescription.Metrics = new OrchestratorMetrics();
-
+            }
             updateServiceDescription.Metrics.Add(requestsPerSecondMetric);
 
-            FabricClient fabricClient = new FabricClient();
+            fabricClient.ServiceManager.UpdateServiceAsync(GetOrchestratorServiceNameFrom(Context), updateServiceDescription);
+        }
+
+        private void DefineOrchestratorScalingPolicies(FabricClient fabricClient) {
+            StatelessServiceUpdateDescription updateServiceDescription = new StatelessServiceUpdateDescription();
+
+            PartitionInstanceCountScaleMechanism mechanism = new PartitionInstanceCountScaleMechanism
+            {
+                MaxInstanceCount = 5,
+                MinInstanceCount = 1,
+                ScaleIncrement = 1
+            };
+
+            AveragePartitionLoadScalingTrigger trigger = new AveragePartitionLoadScalingTrigger
+            {
+                MetricName = requestsPerMinuteMetricName,
+                ScaleInterval = TimeSpan.FromMinutes(1),
+                LowerLoadThreshold = 30.0,
+                UpperLoadThreshold = 90.0
+            };
+
+            ScalingPolicyDescription policy = new ScalingPolicyDescription(mechanism, trigger);
+
+            if (updateServiceDescription.ScalingPolicies == null)
+            {
+                updateServiceDescription.ScalingPolicies = new List<ScalingPolicyDescription>();
+            }
+            updateServiceDescription.ScalingPolicies.Add(policy);
+
             fabricClient.ServiceManager.UpdateServiceAsync(GetOrchestratorServiceNameFrom(Context), updateServiceDescription);
         }
 
