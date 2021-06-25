@@ -19,8 +19,8 @@ namespace Orchestrator
     /// </summary>
     internal sealed class Orchestrator : StatelessService
     {
-        private static int numberOfRequestsWithinSecond = 0;
-        private const string requestsPerSecondMetricName = "OrchestratorRequestsPerSec";
+        private static int numberOfRequestsWithinMinute = 0;
+        private const string requestsPerMinuteMetricName = "OrchestratorRequestsPerMin";
         public Orchestrator(StatelessServiceContext context)
             : base(context)
         { }
@@ -65,17 +65,17 @@ namespace Orchestrator
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                Partition.ReportLoad(new List<LoadMetric> { new LoadMetric(requestsPerSecondMetricName, numberOfRequestsWithinSecond) });
-                numberOfRequestsWithinSecond = 0;
+                Partition.ReportLoad(new List<LoadMetric> { new LoadMetric(requestsPerMinuteMetricName, numberOfRequestsWithinMinute) });
+                numberOfRequestsWithinMinute = 0;
                 
-                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
+                await Task.Delay(TimeSpan.FromSeconds(60), cancellationToken);
             }
         }
 
         private void DefineOrchestratorMetrics()
         {
             StatelessServiceUpdateDescription updateServiceDescription = new StatelessServiceUpdateDescription();
-            StatelessServiceLoadMetricDescription requestsPerSecondMetric = new StatelessServiceLoadMetricDescription() { Name = requestsPerSecondMetricName, Weight = ServiceLoadMetricWeight.High };
+            StatelessServiceLoadMetricDescription requestsPerSecondMetric = new StatelessServiceLoadMetricDescription() { Name = requestsPerMinuteMetricName, Weight = ServiceLoadMetricWeight.High };
 
             if (updateServiceDescription.Metrics == null)
                 updateServiceDescription.Metrics = new OrchestratorMetrics();
@@ -86,7 +86,7 @@ namespace Orchestrator
             fabricClient.ServiceManager.UpdateServiceAsync(GetOrchestratorServiceNameFrom(Context), updateServiceDescription);
         }
 
-        public static void RegisterRequestForMetrics() { numberOfRequestsWithinSecond++; }
+        public static void RegisterRequestForMetrics() { numberOfRequestsWithinMinute++; }
 
         private const string reverseProxyAddress = "http://localhost:19081";
         private static string GetApplicationBaseUriFrom(ServiceContext context) => context.CodePackageActivationContext.ApplicationName;
