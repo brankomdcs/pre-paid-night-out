@@ -37,4 +37,34 @@
       <EnvironmentVariable Name="ASPNETCORE_ENVIRONMENT" Value="[Orchestrator_ASPNETCORE_ENVIRONMENT]" />
     </EnvironmentOverrides>
   </ServiceManifestImport>
+  <!--<DefaultServices>
+		<Service Name="Orchestrator" ServicePackageActivationMode="ExclusiveProcess">
+			<StatelessService ServiceTypeName="OrchestratorType" InstanceCount="1">
+				<SingletonPartition/>
+				<LoadMetrics>
+					<LoadMetric Name="OrchestratorRequestsPerMin" Weight="High"/>
+				</LoadMetrics>
+				<ServiceScalingPolicies>
+					<ScalingPolicy>
+						<AveragePartitionLoadScalingTrigger MetricName="OrchestratorRequestsPerMin" LowerLoadThreshold="30" UpperLoadThreshold="90" ScaleIntervalInSeconds="60"/>
+						<InstanceCountScalingMechanism MinInstanceCount="1" MaxInstanceCount="3" ScaleIncrement="1"/>
+					</ScalingPolicy>
+				</ServiceScalingPolicies>
+			</StatelessService>
+		</Service>
+		<Service Name="Payment" ServicePackageActivationMode="ExclusiveProcess">
+				<StatelessService ServiceTypeName="PaymentType" InstanceCount="1">
+					<SingletonPartition/>
+					<LoadMetrics>
+						<LoadMetric Name="PaymentAverageRequestTime" Weight="High"/>
+					</LoadMetrics>
+					<ServiceScalingPolicies>
+						<ScalingPolicy>
+							<AveragePartitionLoadScalingTrigger MetricName="PaymentAverageRequestTime" LowerLoadThreshold="500" UpperLoadThreshold="1000" ScaleIntervalInSeconds="60"/>
+							<InstanceCountScalingMechanism MinInstanceCount="1" MaxInstanceCount="2" ScaleIncrement="1"/>
+						</ScalingPolicy>
+					</ServiceScalingPolicies>
+				</StatelessService>
+			</Service>
+	</DefaultServices>-->
 </ApplicationManifest>
