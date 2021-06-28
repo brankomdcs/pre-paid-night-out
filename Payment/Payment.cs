@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Fabric;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
@@ -10,8 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
-using Microsoft.ServiceFabric.Data;
-using System.Net.Http;
+using Common;
+using System.Fabric.Description;
 
 namespace Payment
 {
@@ -20,6 +19,9 @@ namespace Payment
     /// </summary>
     internal sealed class Payment : StatelessService
     {
+        private static long numberOfRequestsWithinMinute = 0;
+        private static long totalDurationOfRequestsWithinMinute = 0;
+        private const string averageRequestTimeName = "PaymentAverageRequestTime";
         public Payment(StatelessServiceContext context)
             : base(context)
         { }
@@ -50,5 +52,60 @@ namespace Payment
                     }))
             };
         }
+
+        protected override async Task RunAsync(CancellationToken cancellationToken)
+        {
+            DefineMetricsAndPolicies();
+
+            while (true)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                int averageDurationInMilliseconds = numberOfRequestsWithinMinute == 0 ? 0 : Convert.ToInt32(totalDurationOfRequestsWithinMinute / numberOfRequestsWithinMinute);
+                Partition.ReportLoad(new List<LoadMetric> { new LoadMetric(averageRequestTimeName, averageDurationInMilliseconds) });
+                numberOfRequestsWithinMinute = 0;
+                totalDurationOfRequestsWithinMinute = 0;
+
+                await Task.Delay(TimeSpan.FromSeconds(60), cancellationToken);
+            }
+        }
+
+        private void DefineMetricsAndPolicies()
+        {
+            ResourceConfigurationManager configurationManager = new ResourceConfigurationManager(new FabricClient(), GetPaymentServiceNameFrom(Context));
+
+            StatelessServiceLoadMetricDescription requestsPerSecondMetric = new StatelessServiceLoadMetricDescription
+            {
+                Name = averageRequestTimeName,
+                Weight = ServiceLoadMetricWeight.High
+            };
+
+            configurationManager.AddMetric(requestsPerSecondMetric);
+
+            PartitionInstanceCountScaleMechanism mechanism = new PartitionInstanceCountScaleMechanism
+            {
+                MaxInstanceCount = 2,
+                MinInstanceCount = 1,
+                ScaleIncrement = 1
+            };
+
+            AveragePartitionLoadScalingTrigger trigger = new AveragePartitionLoadScalingTrigger
+            {
+                MetricName = averageRequestTimeName,
+                ScaleInterval = TimeSpan.FromMinutes(1),
+                LowerLoadThreshold = 500,
+                UpperLoadThreshold = 1000
+            };
+
+            configurationManager.AddScalingPolicy(mechanism, trigger);
+        }
+
+        public static void RegisterRequestForMetrics(long elapsedMiliseconds) {
+            numberOfRequestsWithinMinute++;
+            totalDurationOfRequestsWithinMinute += elapsedMiliseconds;
+        }
+
+        private static string GetApplicationBaseUriFrom(ServiceContext context) => context.CodePackageActivationContext.ApplicationName;
+        internal static Uri GetPaymentServiceNameFrom(ServiceContext context) => new Uri($"{GetApplicationBaseUriFrom(context)}/Payment");
     }
 }

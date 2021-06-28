@@ -1,9 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using System.Fabric.Description;
 
-namespace Orchestrator
+namespace Common
 {
-    public class OrchestratorMetrics : KeyedCollection<string, ServiceLoadMetricDescription>
+    public class MetricsCollection : KeyedCollection<string, ServiceLoadMetricDescription>
     {
         protected override string GetKeyForItem(ServiceLoadMetricDescription item)
         {

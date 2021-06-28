@@ -11,6 +11,7 @@ using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
 using System.Net.Http;
 using System.Fabric.Description;
+using Common;
 
 namespace Orchestrator
 {
@@ -59,9 +60,7 @@ namespace Orchestrator
 
         protected override async Task RunAsync(CancellationToken cancellationToken)
         {
-            FabricClient fabricClient = new FabricClient();
-            DefineOrchestratorMetrics(fabricClient);
-            DefineOrchestratorScalingPolicies(fabricClient);
+            DefineMetricsAndPolicies();
 
             while (true)
             {
@@ -74,29 +73,21 @@ namespace Orchestrator
             }
         }
 
-        private void DefineOrchestratorMetrics(FabricClient fabricClient)
+        private void DefineMetricsAndPolicies()
         {
-            StatelessServiceUpdateDescription updateServiceDescription = new StatelessServiceUpdateDescription();
-            StatelessServiceLoadMetricDescription requestsPerSecondMetric = new StatelessServiceLoadMetricDescription 
-            { 
-                Name = requestsPerMinuteMetricName, 
+            ResourceConfigurationManager configurationManager = new ResourceConfigurationManager(new FabricClient(), GetOrchestratorServiceNameFrom(Context));
+
+            StatelessServiceLoadMetricDescription requestsPerSecondMetric = new StatelessServiceLoadMetricDescription
+            {
+                Name = requestsPerMinuteMetricName,
                 Weight = ServiceLoadMetricWeight.High
             };
 
-            if (updateServiceDescription.Metrics == null) {
-                updateServiceDescription.Metrics = new OrchestratorMetrics();
-            }
-            updateServiceDescription.Metrics.Add(requestsPerSecondMetric);
-
-            fabricClient.ServiceManager.UpdateServiceAsync(GetOrchestratorServiceNameFrom(Context), updateServiceDescription);
-        }
-
-        private void DefineOrchestratorScalingPolicies(FabricClient fabricClient) {
-            StatelessServiceUpdateDescription updateServiceDescription = new StatelessServiceUpdateDescription();
+            configurationManager.AddMetric(requestsPerSecondMetric);
 
             PartitionInstanceCountScaleMechanism mechanism = new PartitionInstanceCountScaleMechanism
             {
-                MaxInstanceCount = 5,
+                MaxInstanceCount = 3,
                 MinInstanceCount = 1,
                 ScaleIncrement = 1
             };
@@ -109,31 +100,22 @@ namespace Orchestrator
                 UpperLoadThreshold = 90.0
             };
 
-            ScalingPolicyDescription policy = new ScalingPolicyDescription(mechanism, trigger);
-
-            if (updateServiceDescription.ScalingPolicies == null)
-            {
-                updateServiceDescription.ScalingPolicies = new List<ScalingPolicyDescription>();
-            }
-            updateServiceDescription.ScalingPolicies.Add(policy);
-
-            fabricClient.ServiceManager.UpdateServiceAsync(GetOrchestratorServiceNameFrom(Context), updateServiceDescription);
+            configurationManager.AddScalingPolicy(mechanism, trigger);
         }
 
         public static void RegisterRequestForMetrics() { numberOfRequestsWithinMinute++; }
 
-        private const string reverseProxyAddress = "http://localhost:19081";
         private static string GetApplicationBaseUriFrom(ServiceContext context) => context.CodePackageActivationContext.ApplicationName;
 
         internal static Uri GetOrchestratorServiceNameFrom(ServiceContext context) => new Uri($"{GetApplicationBaseUriFrom(context)}/Orchestrator");
 
         internal static Uri GetAccountServiceNameFrom(ServiceContext context) => new Uri($"{GetApplicationBaseUriFrom(context)}/Account");
-        internal static Uri GetAccountServiceAddressFrom(Uri serviceName) => new Uri($"{reverseProxyAddress}{serviceName.AbsolutePath}");
+        internal static Uri GetAccountServiceAddressFrom(Uri serviceName) => new Uri($"{Common.Constants.ReverseProxyAddress}{serviceName.AbsolutePath}");
 
         internal static Uri GetTransactionServiceNameFrom(ServiceContext context) => new Uri($"{GetApplicationBaseUriFrom(context)}/Transaction");
-        internal static Uri GetTransactionServiceAddressFrom(Uri serviceName) => new Uri($"{reverseProxyAddress}{serviceName.AbsolutePath}");
+        internal static Uri GetTransactionServiceAddressFrom(Uri serviceName) => new Uri($"{Common.Constants.ReverseProxyAddress}{serviceName.AbsolutePath}");
 
         internal static Uri GetPaymentServiceNameFrom(ServiceContext context) => new Uri($"{GetApplicationBaseUriFrom(context)}/Payment");
-        internal static Uri GetPaymentServiceAddressFrom(Uri serviceName) => new Uri($"{reverseProxyAddress}{serviceName.AbsolutePath}");
+        internal static Uri GetPaymentServiceAddressFrom(Uri serviceName) => new Uri($"{Common.Constants.ReverseProxyAddress}{serviceName.AbsolutePath}");
     }
 }
