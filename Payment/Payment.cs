@@ -98,6 +98,14 @@ namespace Payment
             };
 
             configurationManager.AddScalingPolicy(mechanism, trigger);
+
+            ServiceCorrelationDescription affinityDescription = new ServiceCorrelationDescription()
+            {
+                Scheme = ServiceCorrelationScheme.Affinity,
+                ServiceName = GetOrchestratorServiceNameFrom(Context)
+            };
+
+            configurationManager.AddAffinity(affinityDescription);
         }
 
         public static void RegisterRequestForMetrics(long elapsedMiliseconds) {
@@ -107,5 +115,6 @@ namespace Payment
 
         private static string GetApplicationBaseUriFrom(ServiceContext context) => context.CodePackageActivationContext.ApplicationName;
         internal static Uri GetPaymentServiceNameFrom(ServiceContext context) => new Uri($"{GetApplicationBaseUriFrom(context)}/Payment");
+        internal static Uri GetOrchestratorServiceNameFrom(ServiceContext context) => new Uri($"{GetApplicationBaseUriFrom(context)}/Orchestrator");
     }
 }

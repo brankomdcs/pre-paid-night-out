@@ -42,5 +42,18 @@ namespace Common
 
             fabricClient.ServiceManager.UpdateServiceAsync(applicationName, updateServiceDescription);
         }
+
+        public void AddAffinity(ServiceCorrelationDescription serviceCorrelationDescription) 
+        {
+            StatelessServiceUpdateDescription updateServiceDescription = new StatelessServiceUpdateDescription();
+
+            if (updateServiceDescription.Correlations == null) 
+            {
+                updateServiceDescription.Correlations = new List<ServiceCorrelationDescription>();
+            }
+            updateServiceDescription.Correlations.Add(serviceCorrelationDescription);
+
+            fabricClient.ServiceManager.UpdateServiceAsync(applicationName, updateServiceDescription);
+        }
     }
 }

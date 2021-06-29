@@ -105,17 +105,18 @@ namespace Orchestrator
 
         public static void RegisterRequestForMetrics() { numberOfRequestsWithinMinute++; }
 
+        private static string reverseProxyAddress = "http://localhost:19081";
         private static string GetApplicationBaseUriFrom(ServiceContext context) => context.CodePackageActivationContext.ApplicationName;
 
         internal static Uri GetOrchestratorServiceNameFrom(ServiceContext context) => new Uri($"{GetApplicationBaseUriFrom(context)}/Orchestrator");
 
         internal static Uri GetAccountServiceNameFrom(ServiceContext context) => new Uri($"{GetApplicationBaseUriFrom(context)}/Account");
-        internal static Uri GetAccountServiceAddressFrom(Uri serviceName) => new Uri($"{Common.Constants.ReverseProxyAddress}{serviceName.AbsolutePath}");
+        internal static Uri GetAccountServiceAddressFrom(Uri serviceName) => new Uri($"{reverseProxyAddress}{serviceName.AbsolutePath}");
 
         internal static Uri GetTransactionServiceNameFrom(ServiceContext context) => new Uri($"{GetApplicationBaseUriFrom(context)}/Transaction");
-        internal static Uri GetTransactionServiceAddressFrom(Uri serviceName) => new Uri($"{Common.Constants.ReverseProxyAddress}{serviceName.AbsolutePath}");
+        internal static Uri GetTransactionServiceAddressFrom(Uri serviceName) => new Uri($"{reverseProxyAddress}{serviceName.AbsolutePath}");
 
         internal static Uri GetPaymentServiceNameFrom(ServiceContext context) => new Uri($"{GetApplicationBaseUriFrom(context)}/Payment");
-        internal static Uri GetPaymentServiceAddressFrom(Uri serviceName) => new Uri($"{Common.Constants.ReverseProxyAddress}{serviceName.AbsolutePath}");
+        internal static Uri GetPaymentServiceAddressFrom(Uri serviceName) => new Uri($"{reverseProxyAddress}{serviceName.AbsolutePath}");
     }
 }
