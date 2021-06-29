@@ -68,7 +68,7 @@ namespace Orchestrator
 
                 Partition.ReportLoad(new List<LoadMetric> { new LoadMetric(requestsPerMinuteMetricName, numberOfRequestsWithinMinute) });
                 numberOfRequestsWithinMinute = 0;
-                
+
                 await Task.Delay(TimeSpan.FromSeconds(60), cancellationToken);
             }
         }
@@ -76,6 +76,9 @@ namespace Orchestrator
         private void DefineMetricsAndPolicies()
         {
             ResourceConfigurationManager configurationManager = new ResourceConfigurationManager(new FabricClient(), GetOrchestratorServiceNameFrom(Context));
+
+            if (!configurationManager.IsSetToUseConfigurationFromCode(Context))
+                return;
 
             StatelessServiceLoadMetricDescription requestsPerSecondMetric = new StatelessServiceLoadMetricDescription
             {

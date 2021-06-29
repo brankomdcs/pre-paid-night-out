@@ -74,6 +74,9 @@ namespace Payment
         {
             ResourceConfigurationManager configurationManager = new ResourceConfigurationManager(new FabricClient(), GetPaymentServiceNameFrom(Context));
 
+            if (!configurationManager.IsSetToUseConfigurationFromCode(Context))
+                return;
+
             StatelessServiceLoadMetricDescription requestsPerSecondMetric = new StatelessServiceLoadMetricDescription
             {
                 Name = averageRequestTimeName,

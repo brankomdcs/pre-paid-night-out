@@ -16,6 +16,20 @@ namespace Common
             this.applicationName = applicationName;
         }
 
+        public bool IsSetToUseConfigurationFromCode(StatelessServiceContext context)
+        {
+            try
+            {
+                var settings = context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
+                return bool.Parse(settings.Settings.Sections["ResourceConfigurationSettings"].Parameters["UseConfigurationFromCode"].Value);
+            }
+            catch (KeyNotFoundException)
+            {
+                //In case there is no settings defined in Settings.xml to disable configuration from code, return true:
+                return true;
+            }
+        }
+
         public void AddMetric(ServiceLoadMetricDescription serviceLoadMetricDescription) 
         {
             StatelessServiceUpdateDescription updateServiceDescription = new StatelessServiceUpdateDescription();
