@@ -46,8 +46,8 @@
 				</LoadMetrics>
 				<ServiceScalingPolicies>
 					<ScalingPolicy>
-						<AveragePartitionLoadScalingTrigger MetricName="OrchestratorRequestsPerMin" LowerLoadThreshold="30" UpperLoadThreshold="90" ScaleIntervalInSeconds="60"/>
-						<InstanceCountScalingMechanism MinInstanceCount="1" MaxInstanceCount="3" ScaleIncrement="1"/>
+						<AveragePartitionLoadScalingTrigger MetricName="OrchestratorRequestsPerMin" LowerLoadThreshold="45" UpperLoadThreshold="85" ScaleIntervalInSeconds="60"/>
+						<InstanceCountScalingMechanism MinInstanceCount="1" MaxInstanceCount="4" ScaleIncrement="1"/>
 					</ScalingPolicy>
 				</ServiceScalingPolicies>
 			</StatelessService>
@@ -60,7 +60,7 @@
 					</LoadMetrics>
 					<ServiceScalingPolicies>
 						<ScalingPolicy>
-							<AveragePartitionLoadScalingTrigger MetricName="PaymentAverageRequestTime" LowerLoadThreshold="500" UpperLoadThreshold="1000" ScaleIntervalInSeconds="60"/>
+							<AveragePartitionLoadScalingTrigger MetricName="PaymentAverageRequestTime" LowerLoadThreshold="800" UpperLoadThreshold="1100" ScaleIntervalInSeconds="60"/>
 							<InstanceCountScalingMechanism MinInstanceCount="1" MaxInstanceCount="2" ScaleIncrement="1"/>
 						</ScalingPolicy>
 					</ServiceScalingPolicies>

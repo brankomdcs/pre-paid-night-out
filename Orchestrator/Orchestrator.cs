@@ -20,7 +20,8 @@ namespace Orchestrator
     /// </summary>
     internal sealed class Orchestrator : StatelessService
     {
-        private static int numberOfRequestsWithinMinute = 0;
+        private static int numberOfRequestsWithinThisHalfOfMinute = 0;
+        private static int numberOfRequestsWithinPreviousHalfOfMinute = 0;
         private const string requestsPerMinuteMetricName = "OrchestratorRequestsPerMin";
         public Orchestrator(StatelessServiceContext context)
             : base(context)
@@ -66,10 +67,11 @@ namespace Orchestrator
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                Partition.ReportLoad(new List<LoadMetric> { new LoadMetric(requestsPerMinuteMetricName, numberOfRequestsWithinMinute) });
-                numberOfRequestsWithinMinute = 0;
+                Partition.ReportLoad(new List<LoadMetric> { new LoadMetric(requestsPerMinuteMetricName, numberOfRequestsWithinThisHalfOfMinute + numberOfRequestsWithinPreviousHalfOfMinute) });
+                numberOfRequestsWithinPreviousHalfOfMinute = numberOfRequestsWithinThisHalfOfMinute;
+                numberOfRequestsWithinThisHalfOfMinute = 0;
 
-                await Task.Delay(TimeSpan.FromSeconds(60), cancellationToken);
+                await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
             }
         }
 
@@ -83,6 +85,7 @@ namespace Orchestrator
             StatelessServiceLoadMetricDescription requestsPerSecondMetric = new StatelessServiceLoadMetricDescription
             {
                 Name = requestsPerMinuteMetricName,
+                DefaultLoad = 0,
                 Weight = ServiceLoadMetricWeight.High
             };
 
@@ -90,7 +93,7 @@ namespace Orchestrator
 
             PartitionInstanceCountScaleMechanism mechanism = new PartitionInstanceCountScaleMechanism
             {
-                MaxInstanceCount = 3,
+                MaxInstanceCount = 4,
                 MinInstanceCount = 1,
                 ScaleIncrement = 1
             };
@@ -99,14 +102,14 @@ namespace Orchestrator
             {
                 MetricName = requestsPerMinuteMetricName,
                 ScaleInterval = TimeSpan.FromMinutes(1),
-                LowerLoadThreshold = 30.0,
-                UpperLoadThreshold = 90.0
+                LowerLoadThreshold = 45.0,
+                UpperLoadThreshold = 85.0
             };
 
             configurationManager.AddScalingPolicy(mechanism, trigger);
         }
 
-        public static void RegisterRequestForMetrics() { numberOfRequestsWithinMinute++; }
+        public static void RegisterRequestForMetrics() { numberOfRequestsWithinThisHalfOfMinute++; }
 
         private static string reverseProxyAddress = "http://localhost:19081";
         private static string GetApplicationBaseUriFrom(ServiceContext context) => context.CodePackageActivationContext.ApplicationName;

@@ -66,7 +66,7 @@ namespace Payment
                 numberOfRequestsWithinMinute = 0;
                 totalDurationOfRequestsWithinMinute = 0;
 
-                await Task.Delay(TimeSpan.FromSeconds(60), cancellationToken);
+                await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
             }
         }
 
@@ -80,6 +80,7 @@ namespace Payment
             StatelessServiceLoadMetricDescription requestsPerSecondMetric = new StatelessServiceLoadMetricDescription
             {
                 Name = averageRequestTimeName,
+                DefaultLoad = 0,
                 Weight = ServiceLoadMetricWeight.High
             };
 
@@ -96,8 +97,8 @@ namespace Payment
             {
                 MetricName = averageRequestTimeName,
                 ScaleInterval = TimeSpan.FromMinutes(1),
-                LowerLoadThreshold = 500,
-                UpperLoadThreshold = 1000
+                LowerLoadThreshold = 800,
+                UpperLoadThreshold = 1100
             };
 
             configurationManager.AddScalingPolicy(mechanism, trigger);
