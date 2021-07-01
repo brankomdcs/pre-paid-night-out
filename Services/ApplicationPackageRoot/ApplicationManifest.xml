@@ -66,5 +66,15 @@
 					</ServiceScalingPolicies>
 				</StatelessService>
 			</Service>
+	  <Service Name="Account" ServicePackageActivationMode="ExclusiveProcess">
+		  <StatefulService ServiceTypeName="AccountType" TargetReplicaSetSize="3" MinReplicaSetSize="3">
+			  <UniformInt64Partition PartitionCount="2" LowKey="0" HighKey="3" />
+		  </StatefulService>
+	  </Service>
+	  <Service Name="Transaction" ServicePackageActivationMode="ExclusiveProcess">
+		  <StatefulService ServiceTypeName="TransactionType" TargetReplicaSetSize="3" MinReplicaSetSize="3">
+			  <UniformInt64Partition PartitionCount="2" LowKey="0" HighKey="3" />
+		  </StatefulService>
+	  </Service>
 	</DefaultServices>-->
 </ApplicationManifest>
