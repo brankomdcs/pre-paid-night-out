@@ -17,3 +17,10 @@ PPNO application consist of the following components (services):
 3. Transaction - Service responsible for storing all the transactions in the "event sourcing" manner and retrieving transaction history and balance for the users.
 4. Payment - Service responsible for integration with 3rd party payment providers - mocked to wait random time (0.5s - 2s) to simulate communication with external components.
 5. MobileRequestMocker - Console application designed to send random requests (get user, add credit, pay, retrieve history) for random users with configurable frequency.
+
+### Service Fabric features configured
+PPNO application is configured by the default (checkout service classes and Common.ResourceConfigurationManager.cs) to demonstrate amoung the others the following SF features:
+* Partitioning and replication (used in stateful services: Account and Transaction)
+* Custom metrics definition and reporting (used in stateless services Orchestrator and Payment)
+* Autoscaling based on custom metrics (Orchestrator and Payment)
+* Affinity (defined in Payment service for Orchestrator)
