@@ -3,4 +3,7 @@
 	<Section Name="ResourceConfigurationSettings">
 		<Parameter Name="UseConfigurationFromCode" Value="true" />
 	</Section>
+	<Section Name="CommunicationSettings">
+		<Parameter Name="ReverseProxyUrl" Value="http://localhost:19081" />
+	</Section>
 </Settings>

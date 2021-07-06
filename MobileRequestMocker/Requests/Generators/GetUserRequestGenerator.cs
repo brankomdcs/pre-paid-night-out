@@ -6,7 +6,7 @@ namespace MobileRequestMocker.Requests.Generators
     {
         public string GenerateFor(User user)
         {
-            return $"http://localhost:19081/Services/Orchestrator/api/user?id={user.Id}";
+            return $"{Configuration.GetInstance().ReverseProxyUrl}/Services/Orchestrator/api/user?id={user.Id}";
         }
     }
 }

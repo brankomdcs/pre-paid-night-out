@@ -23,9 +23,22 @@ namespace Orchestrator
         private static int numberOfRequestsWithinThisHalfOfMinute = 0;
         private static int numberOfRequestsWithinPreviousHalfOfMinute = 0;
         private const string requestsPerMinuteMetricName = "OrchestratorRequestsPerMin";
+
+        private static string reverseProxyAddress;
+
         public Orchestrator(StatelessServiceContext context)
             : base(context)
-        { }
+        {
+            try
+            {
+                var settings = context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
+                reverseProxyAddress = settings.Settings.Sections["CommunicationSettings"].Parameters["ReverseProxyUrl"].Value;
+            }
+            catch (KeyNotFoundException)
+            {
+                reverseProxyAddress = "http://localhost:19081";
+            }
+        }
 
         /// <summary>
         /// Optional override to create listeners (like tcp, http) for this service instance.
@@ -111,7 +124,6 @@ namespace Orchestrator
 
         public static void RegisterRequestForMetrics() { numberOfRequestsWithinThisHalfOfMinute++; }
 
-        private static string reverseProxyAddress = "http://localhost:19081";
         private static string GetApplicationBaseUriFrom(ServiceContext context) => context.CodePackageActivationContext.ApplicationName;
 
         internal static Uri GetOrchestratorServiceNameFrom(ServiceContext context) => new Uri($"{GetApplicationBaseUriFrom(context)}/Orchestrator");

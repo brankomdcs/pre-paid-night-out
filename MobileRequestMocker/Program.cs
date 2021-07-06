@@ -3,6 +3,7 @@ using MobileRequestMocker.Repositories;
 using MobileRequestMocker.Requests;
 using MobileRequestMocker.Requests.Generators;
 using System;
+using System.Configuration;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -25,7 +26,7 @@ namespace MobileRequestMocker
             HttpClient httpClient = new HttpClient();
             UserRepository userRepository = new UserRepository();
 
-            ServicePointManager.FindServicePoint(new Uri("http://localhost:19801")).ConnectionLimit = maxConcurrentRequests;
+            ServicePointManager.FindServicePoint(new Uri(Configuration.GetInstance().ReverseProxyUrl)).ConnectionLimit = maxConcurrentRequests;
 
             if (registerUsersStepSelected) {
                 RegisterUserRequestGenerator registerUserRequestGenerator = new RegisterUserRequestGenerator();
